@@ -9,20 +9,22 @@
 import UIKit
 import CoreLocation
 
-var defaultPlacesList: [String : CLLocationCoordinate2D] =
-    ["Taj Mahal" : CLLocationCoordinate2D(latitude: 21.1, longitude: 78.0),
-    "Lviv": CLLocationCoordinate2D(latitude: 21.1, longitude: 78.0)]
-
-struct Places {
-    var placeName : String!
-    var placeCoordinate : CLLocationCoordinate2D!
-}
-
 class TableViewController: UITableViewController {
 
+    var defaultPlacesList: [String : CLLocationCoordinate2D] =
+    [
+        "Taj Mahal" : CLLocationCoordinate2D(latitude: 21.1, longitude: 78.0),
+        "Lviv": CLLocationCoordinate2D(latitude: 49.8, longitude: 23.9)
+    ]
+    
+    struct Places {
+        var placeName : String!
+        var placeCoordinate : CLLocationCoordinate2D!
+    }
+    
     var placesArray = [Places]()
     
-    fileprivate func getPlacesArray() -> [Places] {
+    fileprivate func genaratePlacesArray() -> [Places] {
         for (key, value) in defaultPlacesList {
             print("\(key) -> \(value)")
             placesArray.append(Places(placeName: key, placeCoordinate: value))
@@ -37,7 +39,7 @@ class TableViewController: UITableViewController {
         tableView.delegate = self
         tableView.dataSource = self
         
-        getPlacesArray()
+        genaratePlacesArray()
 
     }
 
@@ -47,7 +49,6 @@ class TableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-//        var key  = Array(placesArray)[indexPath.row]
         cell.textLabel?.text = placesArray[indexPath.row].placeName!
         
         return cell
@@ -59,7 +60,6 @@ class TableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-//            list.remove(at: indexPath.row)
             placesArray.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
         }
@@ -72,7 +72,8 @@ class TableViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "toMap" {
             if let destination = segue.destination as? MapViewController {
-                print("segue toMap")
+                let indexPath = sender as! NSIndexPath
+                destination.coordinatesFromTable = placesArray[indexPath.row].placeCoordinate
             }
         }
     }

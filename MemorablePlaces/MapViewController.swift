@@ -12,6 +12,8 @@ import MapKit
 
 class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate {
 
+    var coordinatesFromTable = CLLocationCoordinate2D(latitude: 0, longitude: 0)
+    
     @IBOutlet weak var map: MKMapView!
 
     var locationManager = CLLocationManager()
@@ -27,13 +29,18 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-
+        
         let userLocation = locations[0]
-        let lat = userLocation.coordinate.latitude
-        let lon = userLocation.coordinate.longitude
+        var lat = userLocation.coordinate.latitude
+        var lon = userLocation.coordinate.longitude
         let latDelta: CLLocationDegrees = 0.05
         let lonDelta: CLLocationDegrees = 0.05
-
+        
+        if !(coordinatesFromTable.latitude == 0 && coordinatesFromTable.longitude == 0) {
+            lat = coordinatesFromTable.latitude
+            lon = coordinatesFromTable.longitude
+        }
+        
         let span = MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lonDelta)
         let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
         let region = MKCoordinateRegion(center: coordinate, span: span)
@@ -52,9 +59,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         let newCoordinates = map.convert(touchPoint, toCoordinateFrom: map)
         let annotation = MKPointAnnotation()
         annotation.coordinate = newCoordinates
-        map.addAnnotation(annotation)
-        
-        
         
         if gr.state == UIGestureRecognizer.State.began {
             let touchPoint = gr.location(in: map)
@@ -73,7 +77,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
                 
                 if (placemarks?.count)! > 0 {
                     let pm = placemarks![0]
-                    annotation.title = "\(pm.subThoroughfare ?? "no addr1") \(pm.thoroughfare ?? "no addr2")"
+                    annotation.title = "\(pm.subThoroughfare ?? "n/a") \(pm.thoroughfare ?? "n/a")"
                     annotation.subtitle = "newly added place"
                     
                     print(annotation.title as Any)
