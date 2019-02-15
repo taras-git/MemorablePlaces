@@ -75,12 +75,14 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
                     let pm = placemarks![0]
                     annotation.title = "\(pm.subThoroughfare ?? "no addr1") \(pm.thoroughfare ?? "no addr2")"
                     annotation.subtitle = "newly added place"
+                    
                     print(annotation.title as Any)
                     
                     self.map.addAnnotation(annotation)
                     
                 } else {
                     annotation.title = "Unknown Place"
+                    annotation.coordinate = newCoordinates
                     print("Problem with the data received from geocoder")
                     
                     self.map.addAnnotation(annotation)

@@ -63,7 +63,7 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="My Places" id="6V9-R5-RYj">
-                        <barButtonItem key="rightBarButtonItem" title="Item" id="dR3-vp-Zxl">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="dR3-vp-Zxl">
                             <connections>
                                 <segue destination="BYZ-38-t0r" kind="show" identifier="toMap" id="B89-VK-3eF"/>
                             </connections>
