@@ -39,6 +39,56 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         let region = MKCoordinateRegion(center: coordinate, span: span)
 
         map.setRegion(region, animated: true)
+        
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gr:)))
+        longPressRecognizer.minimumPressDuration = 2
+        
+        map.addGestureRecognizer(longPressRecognizer)
+        
+    }
+    
+    @objc func longPress(gr: UIGestureRecognizer){
+        let touchPoint = gr.location(in: map)
+        let newCoordinates = map.convert(touchPoint, toCoordinateFrom: map)
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = newCoordinates
+        map.addAnnotation(annotation)
+        
+        
+        
+        if gr.state == UIGestureRecognizer.State.began {
+            let touchPoint = gr.location(in: map)
+            let newCoordinates = map.convert(touchPoint, toCoordinateFrom: map)
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = newCoordinates
+            
+            CLGeocoder().reverseGeocodeLocation(CLLocation(latitude: newCoordinates.latitude,
+                                                           longitude: newCoordinates.longitude),
+                                                completionHandler: { (placemarks, error) -> Void in
+                
+                if error != nil {
+                    print("ERROR in CLGeocoder: \(String(describing: error))")
+                    return
+                }
+                
+                if (placemarks?.count)! > 0 {
+                    let pm = placemarks![0]
+                    annotation.title = "\(pm.subThoroughfare ?? "no addr1") \(pm.thoroughfare ?? "no addr2")"
+                    annotation.subtitle = "newly added place"
+                    print(annotation.title as Any)
+                    
+                    self.map.addAnnotation(annotation)
+                    
+                } else {
+                    annotation.title = "Unknown Place"
+                    print("Problem with the data received from geocoder")
+                    
+                    self.map.addAnnotation(annotation)
+                }
+                                                    
+            });
+            
+        }
     }
 
 
